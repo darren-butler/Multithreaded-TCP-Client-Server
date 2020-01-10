@@ -13,10 +13,13 @@ public class ConnectionHandler implements Runnable {
 	private ObjectInputStream in;
 	private String message;
 	private int result;
+	
+	private Database db = null;
 
-	public ConnectionHandler(Socket connection, int socketID) {
+	public ConnectionHandler(Socket connection, int socketID, Database db) {
 		this.connection = connection;
 		this.socketID = socketID;
+		this.db = db;
 	}
 
 	@Override
@@ -33,6 +36,8 @@ public class ConnectionHandler implements Runnable {
 				send("SHALL WE PLAY A GAME?\n1.Chess\n2.Global Thermonuclear War");
 				message = (String) in.readObject();
 				System.out.println(message);
+				
+				System.out.println(db.getTestInts().size());
 
 			} while (true); // client response is invalid
 
@@ -48,7 +53,6 @@ public class ConnectionHandler implements Runnable {
 	public void send(String str) throws IOException {
 		out.writeObject(str);
 		out.flush();
-		//System.out.println("client>" + str);
 	}
 
 }

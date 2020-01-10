@@ -12,6 +12,7 @@ public class Server {
 		final int BACKLOG = 10;
 		ServerSocket listener;
 		int clientID = 0;
+		Database db = new Database(); // shared object
 
 		try {
 			listener = new ServerSocket(PORT, BACKLOG);
@@ -20,8 +21,8 @@ public class Server {
 			while (true) {
 				Socket connection = listener.accept();
 				
-				System.out.println("new connection received... spawning thread");
-				ConnectionHandler connectionHandler = new ConnectionHandler(connection, clientID);
+				System.out.println("new connection received... spawning thread...");
+				ConnectionHandler connectionHandler = new ConnectionHandler(connection, clientID, db);
 				clientID++;
 				
 				new Thread(connectionHandler).start();

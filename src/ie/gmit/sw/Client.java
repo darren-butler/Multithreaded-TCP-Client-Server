@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
@@ -19,18 +18,23 @@ public class Client {
 
 	public Client() {
 		console = new Scanner(System.in);
+		
+//		System.out.println("IP: ");
+//		ip = console.next();
+//		System.out.println("Port: ");
+//		port = console.nextInt();
+		//TODO remove hardcode
+		ip = "127.0.0.1";
+		port = 10000;
 
-		System.out.println("IP: ");
-		ip = console.next();
 
-		System.out.println("Port");
-		port = console.nextInt();
 	}
 
 	public static void main(String[] args) {
 
 		Client client = new Client();
 		client.runApplication();
+		
 	}
 
 	public void runApplication() {
@@ -53,7 +57,7 @@ public class Client {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO
+			// TODO Auto-generated catch block
 		}
 
 	}
@@ -61,6 +65,5 @@ public class Client {
 	private void send(String str) throws IOException {
 		out.writeObject(str);
 		out.flush();
-		System.out.println("client>" + str);
 	}
 }
