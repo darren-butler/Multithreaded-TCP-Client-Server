@@ -26,6 +26,7 @@ public class Server {
 				clientID++;
 				
 				new Thread(connectionHandler).start();
+				
 			}
 
 		} catch (IOException e) {

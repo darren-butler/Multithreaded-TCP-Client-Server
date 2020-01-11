@@ -14,9 +14,11 @@ import java.lang.reflect.Type;
 public class Database {
 	File agentsFile = new File("agents.txt");
 	File clubsFile = new File("clubs.txt");
+	File playersFile = new File("players.txt");
 
-	private ArrayList<Club> clubs;
 	private ArrayList<Agent> agents;
+	private ArrayList<Club> clubs;
+	private ArrayList<Player> players;
 
 	public Database() {
 		JsonReader jr;
@@ -57,9 +59,27 @@ public class Database {
 
 		}
 
+		try {
+			playersFile.createNewFile();
+
+			if (playersFile.length() == 0) {
+				players = new ArrayList<>();
+			} else {
+				jr = new JsonReader(new FileReader(playersFile));
+				Type tempPlayer = new TypeToken<ArrayList<Player>>() {
+				}.getType();
+				gson = new Gson();
+				players = gson.fromJson(jr, tempPlayer);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
 	}
 
-	public void backupDatabase() throws FileNotFoundException { //TODO synchronize?
+	public void backupDatabase() throws FileNotFoundException { // TODO synchronize?
 		Gson gson = new Gson();
 		String json = gson.toJson(agents);
 		PrintWriter pw = new PrintWriter(new FileOutputStream(agentsFile));
@@ -68,6 +88,11 @@ public class Database {
 
 		json = gson.toJson(clubs);
 		pw = new PrintWriter(new FileOutputStream(clubsFile));
+		pw.print(json);
+		pw.close();
+
+		json = gson.toJson(players);
+		pw = new PrintWriter(new FileOutputStream(playersFile));
 		pw.print(json);
 		pw.close();
 	}
@@ -80,6 +105,10 @@ public class Database {
 		return clubs;
 	}
 
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
+
 	public synchronized void addAgent(Agent agent) throws FileNotFoundException {
 		agents.add(agent);
 		backupDatabase();
@@ -87,6 +116,11 @@ public class Database {
 
 	public synchronized void addClub(Club club) throws FileNotFoundException {
 		clubs.add(club);
+		backupDatabase();
+	}
+
+	public synchronized void addPlayer(Player player) throws FileNotFoundException {
+		players.add(player);
 		backupDatabase();
 	}
 
@@ -110,13 +144,42 @@ public class Database {
 		return -1;
 	}
 	
+	public int containsPlayer(int id) {
+		for(Player p : players) {
+			if(p.getId() == id);
+			return players.indexOf(p);
+		}
+		return -1;
+	}
+
 	public int getClubByID(int id) {
-		for(Club c: clubs) {
-			if(c.getId() == id) {
+		for (Club c : clubs) {
+			if (c.getId() == id) {
 				return clubs.indexOf(c);
 			}
 		}
 		return -1;
+	}
+	
+	public synchronized void updateValuation(int index, double newValuation) throws FileNotFoundException {
+		players.get(index).setValuation(newValuation);
+		backupDatabase();
+	}
+	
+	public synchronized void updatePlayerStatus(int index, int newStatus) throws FileNotFoundException {
+		players.get(index).setStatus(newStatus);
+		backupDatabase();
+	}
+	
+	public ArrayList<Player> searchPlayersByPosition(int position) {
+		ArrayList<Player> result = new ArrayList<>();
+		for(Player p : players) {
+			if(p.getPosition() == position) {
+				result.add(p);
+			}
+		}
+		
+		return result;
 	}
 
 }

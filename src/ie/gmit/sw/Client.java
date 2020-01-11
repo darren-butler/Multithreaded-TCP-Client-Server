@@ -19,13 +19,13 @@ public class Client {
 	public Client() {
 		console = new Scanner(System.in);
 
-//		System.out.println("IP: ");
-//		ip = console.next();
-//		System.out.println("Port: ");
-//		port = console.nextInt();
+		System.out.println("IP: ");
+		ip = console.next();
+		System.out.println("Port: ");
+		port = console.nextInt();
 		// TODO remove hardcode
-		ip = "127.0.0.1";
-		port = 10000;
+//		ip = "127.0.0.1";
+//		port = 10000;
 
 	}
 

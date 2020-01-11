@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ConnectionHandler implements Runnable {
 
@@ -19,6 +20,8 @@ public class ConnectionHandler implements Runnable {
 	private Agent userAgent = null;
 	private Club userClub = null;
 	private boolean isLoggedIn = false;
+	private double valuation = 0;
+	private int index = -1;
 
 	private Database db = null;
 
@@ -100,62 +103,75 @@ public class ConnectionHandler implements Runnable {
 
 			if (userAgent != null) { // if - successfully logged in as agent
 				do {
-					send("\t\tWelcome " + userAgent.getName() + "\n\t\t1.Add Player\n\t\t2.Update Player Valuation\n\t\t3.Update Player Status\n\t\t>");
+					send("\t\tWelcome " + userAgent.getName() + "\n\t\t1.Add Player\n\t\t2.Update Player Valuation\n\t\t3.Update Player Status\n\t\tCtrl+C - Quit\n\t\t>");
 					option = Integer.parseInt((String)in.readObject());
-				}while(option != 1 && option != 2 && option != 3);
-
-				switch(option) {
-				case 1:
-					send("\t\tAdd Player Menu\n\t\t\tName: ");
-					name = (String) in.readObject();
-					send("\t\t\tID: ");
-					id = Integer.parseInt((String)in.readObject());
-					Player player = new Player(id, name);
-					send("\t\t\tAge: ");
-					player.setAge(Integer.parseInt((String) in.readObject()));
-					send("\t\t\tClub ID: ");
-					player.setClubID(Integer.parseInt((String) in.readObject()));
-					player.setAgentID(userAgent.getId()); // set the player's agent ID to the agent logged in who is adding the player?
-//					send("\t\t\tAgent ID: ");
-//					player.setAgentID(Integer.parseInt((String) in.readObject()));
-					send("\t\t\tValuation: ");
-					player.setValuation(Double.parseDouble((String)in.readObject()));
-					send("\t\t\tStatus (1.For Sale 2.Sold 3.Sale Suspended):");
-					player.setStatus(Integer.parseInt((String)in.readObject()));
-					send("\t\t\tPosition (1.Goalkeeper 2.Defender 3.Midfield 4.Attacker):");
-					player.setPosition(Integer.parseInt((String)in.readObject()));
-					
-					userAgent.setPlayer(player);
-					id = db.getClubByID(player.getClubID());
-					
-					db.getClubs().get(player.getClubID()).getPlayers().add(player); // overengineered
-					db.backupDatabase();
-					break;
-				case 2:
-					break;
-				case 3:
-					break;
-				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-
+					switch(option) {
+					case 1:
+						send("\t\tAdd Player Menu\n\t\t\tName: ");
+						name = (String) in.readObject();
+						send("\t\t\tID: ");
+						id = Integer.parseInt((String)in.readObject());
+						Player player = new Player(id, name);
+						send("\t\t\tAge: ");
+						player.setAge(Integer.parseInt((String) in.readObject()));
+						send("\t\t\tClub ID: ");
+						player.setClubID(Integer.parseInt((String) in.readObject()));
+						player.setAgentID(userAgent.getId()); // set the player's agent ID to the agent logged in who is adding the player?
+						send("\t\t\tValuation: ");
+						player.setValuation(Double.parseDouble((String)in.readObject()));
+						send("\t\t\tStatus (1.For Sale 2.Sold 3.Sale Suspended):");
+						player.setStatus(Integer.parseInt((String)in.readObject()));
+						send("\t\t\tPosition (1.Goalkeeper 2.Defender 3.Midfield 4.Attacker):");
+						player.setPosition(Integer.parseInt((String)in.readObject()));					
+						db.addPlayer(player);
+						break;
+					case 2:
+						send("\t\t\tPlayer ID: ");
+						id = Integer.parseInt((String)in.readObject());
+						index = db.containsPlayer(id);
+						send("\t\t\tNew Valuation: ");
+						valuation = Double.parseDouble((String)in.readObject());
+						db.updateValuation(index, valuation);
+						break;
+					case 3:
+						send("\t\t\tPlayer ID: ");
+						id = Integer.parseInt((String)in.readObject());
+						index = db.containsPlayer(id);
+						send("\t\t\tStatus (1.For Sale 2.Sold 3.Sale Suspended):");
+						id = Integer.parseInt((String)in.readObject());
+						db.updatePlayerStatus(index, id); // int id being reused to hold the status input by user
+						break;
+					}
+				}while(option != 0);
 			} else if (userClub != null) { // or successfully logged in as club
-				send("\t\tWelcome " + userClub.getName() + "!");
+				do {
+					send("\t\tWelcome " + userClub.getName() + "\n\t\t1.Search players by position\n\t\t2.Show for sale players"
+							+ "\n\t\t3.Suspend or resume sale\n\t\t4.Purchase Player\n\t\tCtrl+C to quit\n\t\t>");
+					option = Integer.parseInt((String)in.readObject());
+					switch(option) {
+					case 1:
+						int position = 0;
+						send("\t\t\tPosition to search by (1.Goalkeeper 2.Defender 3.Midfield 4.Attacker): ");
+						position = Integer.parseInt((String)in.readObject());
+						ArrayList<Player> resultSet = db.searchPlayersByPosition(position);
+						String results = "";
+						for(Player p : resultSet) {
+							results += p.getName() + " ";
+						}
+						send(results);
+						break;
+					}
+					
+					
+					
+					
+				}while(option != 0);
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 	}
 
 	public void send(String str) throws IOException {
