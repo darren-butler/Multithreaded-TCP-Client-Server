@@ -13,5 +13,29 @@ public class Club extends Actor {
 		this.funds = funds;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public double getFunds() {
+		return funds;
+	}
+
+	public void setFunds(double funds) {
+		this.funds = funds;
+	}
+
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
+
+	public void setPlayers(ArrayList<Player> players) {
+		this.players = players;
+	}
+
 
 }

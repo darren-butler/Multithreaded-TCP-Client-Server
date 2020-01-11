@@ -18,15 +18,14 @@ public class Client {
 
 	public Client() {
 		console = new Scanner(System.in);
-		
+
 //		System.out.println("IP: ");
 //		ip = console.next();
 //		System.out.println("Port: ");
 //		port = console.nextInt();
-		//TODO remove hardcode
+		// TODO remove hardcode
 		ip = "127.0.0.1";
 		port = 10000;
-
 
 	}
 
@@ -34,7 +33,7 @@ public class Client {
 
 		Client client = new Client();
 		client.runApplication();
-		
+
 	}
 
 	public void runApplication() {
@@ -49,10 +48,10 @@ public class Client {
 
 			do {
 				message = (String) in.readObject();
-				System.out.println(message);
-
+				System.out.print(message);
 				message = console.next();
 				send(message);
+
 			} while (true);
 
 		} catch (Exception e) {
