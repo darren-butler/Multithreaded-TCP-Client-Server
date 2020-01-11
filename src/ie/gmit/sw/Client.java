@@ -23,7 +23,8 @@ public class Client {
 		ip = console.next();
 		System.out.println("Port: ");
 		port = console.nextInt();
-		// TODO remove hardcode
+		
+		// Hard-coded IP for debugging
 //		ip = "127.0.0.1";
 //		port = 10000;
 
@@ -46,7 +47,7 @@ public class Client {
 			in = new ObjectInputStream(connection.getInputStream());
 			System.out.println("client/server connection established...");
 
-			do {
+			do { // infinite loop, read from server, print to client, input/send response to server
 				message = (String) in.readObject();
 				System.out.print(message);
 				message = console.next();
@@ -56,7 +57,6 @@ public class Client {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO Auto-generated catch block
 		}
 
 	}

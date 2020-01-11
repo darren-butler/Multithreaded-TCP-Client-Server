@@ -12,7 +12,7 @@ public class Server {
 		final int BACKLOG = 10;
 		ServerSocket listener;
 		int clientID = 0;
-		Database db = new Database(); // shared object
+		Database db = new Database(); // Shared Object which is composed of three Lists, agents, clubs, players
 
 		try {
 			listener = new ServerSocket(PORT, BACKLOG);
@@ -30,7 +30,6 @@ public class Server {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

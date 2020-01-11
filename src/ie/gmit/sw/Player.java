@@ -1,6 +1,6 @@
 package ie.gmit.sw;
 
-public class Player extends Actor{
+public class Player extends Actor {
 
 	private int age;
 	private int clubID;
@@ -8,7 +8,7 @@ public class Player extends Actor{
 	private double valuation;
 	private int status;
 	private int position;
-	
+
 	public Player(int id, String name) {
 		super(id, name);
 	}
@@ -60,7 +60,5 @@ public class Player extends Actor{
 	public void setPosition(int position) {
 		this.position = position;
 	}
-	
-	
 
 }

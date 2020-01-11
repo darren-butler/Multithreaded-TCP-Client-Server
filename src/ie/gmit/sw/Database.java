@@ -11,6 +11,12 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import java.lang.reflect.Type;
 
+/*
+ * This Class has three ArrayLists, agents, clubs and players
+ * These lists are accessed in a thread safe way by using synchronized methods
+ * These lists are then backed up by converting them to JSON and storing in serverside .txt files
+ * Googles GSON library was used for serializing and deserializing java lists into JSON
+ */
 public class Database {
 	File agentsFile = new File("agents.txt");
 	File clubsFile = new File("clubs.txt");
@@ -25,23 +31,23 @@ public class Database {
 		Gson gson;
 
 		try {
-			agentsFile.createNewFile();
+			agentsFile.createNewFile(); // if file does not already exist this will create it
 
-			if (agentsFile.length() == 0) {
+			if (agentsFile.length() == 0) { // if existing txt file is empty, (database is empty), initialize a new empty list
 				agents = new ArrayList<>();
 			} else {
 				jr = new JsonReader(new FileReader(agentsFile));
-				Type tempAgent = new TypeToken<ArrayList<Agent>>() {
+				Type tempAgent = new TypeToken<ArrayList<Agent>>() { // tempAgent is used along with the data to flag the list Types
 				}.getType();
 				gson = new Gson();
-				agents = gson.fromJson(jr, tempAgent);
+				agents = gson.fromJson(jr, tempAgent); // assign Database list to list deserialized from txt file
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		try {
+		try { // same process as above
 			clubsFile.createNewFile();
 
 			if (clubsFile.length() == 0) {
@@ -59,7 +65,7 @@ public class Database {
 
 		}
 
-		try {
+		try { // same process as above
 			playersFile.createNewFile();
 
 			if (playersFile.length() == 0) {
@@ -79,11 +85,12 @@ public class Database {
 
 	}
 
-	public void backupDatabase() throws FileNotFoundException { // TODO synchronize?
+	// This method is only called by synchronized methods, so no need to synchronize it itself
+	public void backupDatabase() throws FileNotFoundException { 
 		Gson gson = new Gson();
-		String json = gson.toJson(agents);
+		String json = gson.toJson(agents); // convert list to String 
 		PrintWriter pw = new PrintWriter(new FileOutputStream(agentsFile));
-		pw.print(json);
+		pw.print(json); // write list String to file
 		pw.close();
 
 		json = gson.toJson(clubs);
@@ -109,6 +116,7 @@ public class Database {
 		return players;
 	}
 
+	// Adds an agent to the Java list, then backs up the json txt file
 	public synchronized void addAgent(Agent agent) throws FileNotFoundException {
 		agents.add(agent);
 		backupDatabase();
@@ -124,7 +132,7 @@ public class Database {
 		backupDatabase();
 	}
 
-	public int containsAgent(int id, String name) { // if id & name of agent exist in list, return the index else
+	public int containsAgent(int id, String name) { // if id & name of agent exist in list, return the index else -1
 		for (Agent a : agents) {
 			if (a.getId() == id && a.getName().equalsIgnoreCase(name)) {
 				return agents.indexOf(a);
